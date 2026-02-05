@@ -1,0 +1,173 @@
+.section {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 2rem 1rem;
+}
+
+.heading {
+  font-family: var(--font-display);
+  font-size: 1.75rem;
+  font-weight: 600;
+  margin: 0 0 1.5rem;
+}
+
+.summary {
+  display: grid;
+  gap: 1.5rem;
+  grid-template-columns: 1fr 1fr;
+  margin-bottom: 2rem;
+}
+
+@media (max-width: 640px) {
+  .summary {
+    grid-template-columns: 1fr;
+  }
+}
+
+.block {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 1.25rem;
+}
+
+.blockTitle {
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--accent);
+  margin: 0 0 0.5rem;
+}
+
+.shapeName,
+.undertone {
+  font-size: 1.2rem;
+  font-weight: 600;
+  margin: 0 0 0.5rem;
+}
+
+.reasoning {
+  color: var(--text-muted);
+  font-size: 0.9rem;
+  margin: 0;
+  line-height: 1.45;
+}
+
+.note {
+  font-size: 0.8rem;
+  color: var(--success);
+  margin: 0.5rem 0 0;
+}
+
+.swatches {
+  margin-top: 0.75rem;
+}
+
+.swatchRow {
+  font-size: 0.9rem;
+  margin-bottom: 0.35rem;
+}
+
+.swatchLabel {
+  font-weight: 500;
+  margin-right: 0.5rem;
+}
+
+.swatchList {
+  color: var(--text);
+}
+
+.swatchListMuted {
+  color: var(--text-muted);
+}
+
+.outfitsTitle {
+  font-size: 1.2rem;
+  font-weight: 600;
+  margin: 0 0 0.5rem;
+}
+
+.outfitsIntro {
+  color: var(--text-muted);
+  font-size: 0.95rem;
+  margin: 0 0 1.25rem;
+}
+
+.outfitGrid {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.outfitCard {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 1.25rem;
+}
+
+.outfitHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.outfitName {
+  font-size: 1.05rem;
+  font-weight: 600;
+  margin: 0;
+}
+
+.score {
+  font-size: 0.85rem;
+  color: var(--accent);
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.outfitDesc {
+  font-size: 0.9rem;
+  color: var(--text-muted);
+  margin: 0 0 0.5rem;
+}
+
+.silhouette,
+.colours {
+  font-size: 0.88rem;
+  margin: 0 0 0.35rem;
+}
+
+.outfitReasoning {
+  margin-top: 0.75rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid var(--border);
+}
+
+.outfitReasoning p {
+  font-size: 0.88rem;
+  color: var(--text-muted);
+  margin: 0 0 0.25rem;
+}
+
+.reasoning p:last-child {
+  margin-bottom: 0;
+}
+
+.actions {
+  margin-top: 2rem;
+}
+
+.startOverBtn {
+  background: transparent;
+  color: var(--accent);
+  border: 1px solid var(--accent);
+  padding: 0.65rem 1.25rem;
+  border-radius: var(--radius-sm);
+  font-weight: 500;
+}
+
+.startOverBtn:hover {
+  background: rgba(201, 168, 108, 0.15);
+}

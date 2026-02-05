@@ -1,0 +1,6 @@
+{
+  "spring": { "lab_mean": [70, 18, 28] },
+  "summer": { "lab_mean": [65, 8, 5] },
+  "autumn": { "lab_mean": [60, 20, 35] },
+  "winter": { "lab_mean": [55, 0, -5] }
+}

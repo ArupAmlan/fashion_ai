@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="300" height="400" viewBox="0 0 300 400">
+  <rect width="300" height="400" fill="#f4f4f4"/>
+  <g transform="translate(150,70)">
+    <rect x="-45" y="-10" width="90" height="70" rx="12" fill="#f1c27d"/>
+    <path d="M -90 60 L -50 80 L -20 220 L 20 220 L 50 80 L 90 60 Q 70 260 0 300 Q -70 260 -90 60 Z" fill="#6a8d73"/>
+    <rect x="-25" y="60" width="50" height="50" fill="#2e4f3d" opacity="0.5"/>
+  </g>
+  <text x="150" y="380" text-anchor="middle" font-family="Arial" font-size="16" fill="#444">A-line Midi + Fitted Top</text>
+</svg>
