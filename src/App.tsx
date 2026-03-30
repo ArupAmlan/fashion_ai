@@ -270,9 +270,24 @@ export default function App() {
 
   return (
     <div className="app">
-      <ThreeBackground />
+      {showBackground && <ThreeBackground />}
       <header className="header">
         <div className="backend-status" style={{ position: 'absolute', top: '10px', right: '10px', fontSize: '0.8rem', display: 'flex', alignItems: 'center', gap: '5px' }}>
+          <button 
+            onClick={() => setShowBackground(!showBackground)}
+            style={{ 
+              marginRight: '15px', 
+              padding: '2px 8px', 
+              fontSize: '0.7rem', 
+              backgroundColor: 'rgba(255,255,255,0.1)', 
+              border: '1px solid rgba(255,255,255,0.2)',
+              borderRadius: '4px',
+              color: 'white',
+              cursor: 'pointer'
+            }}
+          >
+            BG: {showBackground ? 'ON' : 'OFF'}
+          </button>
           <span style={{ width: '8px', height: '8px', borderRadius: '50%', backgroundColor: backendStatus === 'online' ? '#4ade80' : backendStatus === 'offline' ? '#f87171' : '#fbbf24' }}></span>
           {backendStatus === 'online' ? 'Backend Connected' : backendStatus === 'offline' ? 'Backend Offline' : 'Checking Backend...'}
         </div>
