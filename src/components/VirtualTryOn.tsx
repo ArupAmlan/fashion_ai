@@ -49,7 +49,8 @@ export const VirtualTryOn: React.FC<VirtualTryOnProps> = ({ onBack }) => {
       formData.append("garment_image", garmentImage);
 
       // Use VTON endpoint
-      const response = await fetch("http://localhost:8000/vton", {
+      const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:8000'
+      const response = await fetch(`${apiUrl}/vton`, {
         method: "POST",
         body: formData,
       });

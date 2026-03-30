@@ -68,7 +68,8 @@ export default function App() {
         const fd = new FormData()
         fd.append('file', file, file.name)
         // Use MINIMAL skin analysis endpoint
-        const res = await fetch('http://localhost:8000/instant/skin', {
+        const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:8000'
+        const res = await fetch(`${apiUrl}/instant/skin`, {
           method: 'POST',
           body: fd,
         })
@@ -111,7 +112,8 @@ export default function App() {
       // Use image-based body shape if available
       const bodyShapeOverride = imageBodyShape?.shape
       
-      const response = await fetch('http://localhost:8000/instant/complete', {
+      const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:8000'
+      const response = await fetch(`${apiUrl}/instant/complete`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
