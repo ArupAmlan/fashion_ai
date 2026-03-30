@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { ModeSelect } from './components/ModeSelect'
 import { MeasurementForm } from './components/MeasurementForm'
 import { ImageUpload } from './components/ImageUpload'
@@ -7,21 +7,26 @@ import { Results } from './components/Results'
 import { LoadingSpinner } from './components/LoadingSpinner'
 import type { InputMode, AnalysisResult, Measurements, Undertone, Gender, Occasion } from './types'
 import { getBodyShapeFromKeypointsWithGender } from './lib/imageAnalysis'
-import { detectPoseFromImageSource, createImageFromFile } from './lib/poseDetection'
+import { detectPoseFromImageSource, createImageFromFile, preloadPoseDetector } from './lib/poseDetection'
 import { getUndertoneFromImage } from './lib/skinUndertone'
 import { GenderSelect } from './components/GenderSelect'
 import { OccasionSelect } from './components/OccasionSelect'
 import { VirtualTryOn } from './components/VirtualTryOn'
 import { ThreeBackground } from './components/ThreeBackground'
+import { getColourPaletteForUndertone } from './lib/colourHarmony'
+import { getBodyShapeFromMeasurements } from './lib/bodyShape'
+import { getOutfitRecommendations } from './lib/recommendations'
 
 type Step = 'mode' | 'gender' | 'input' | 'undertone' | 'occasion' | 'results' | 'vton'
+
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000'
 
 export default function App() {
   const [step, setStep] = useState<Step>('mode')
   const [inputMode, setInputMode] = useState<InputMode | null>(null)
   const [gender, setGender] = useState<Gender | null>(null)
   const [measurements, setMeasurements] = useState<Measurements | null>(null)
-  const [, setUndertone] = useState<Undertone | null>(null)
+  const [undertone, setUndertone] = useState<Undertone | null>(null)
   const [result, setResult] = useState<AnalysisResult | null>(null)
   const [imageBodyShape, setImageBodyShape] = useState<ReturnType<typeof getBodyShapeFromKeypointsWithGender> | null>(null)
   const [imageUndertone, setImageUndertone] = useState<Undertone | null>(null)
@@ -29,6 +34,25 @@ export default function App() {
   const [error, setError] = useState<string | null>(null)
   const [useMeasurementsInImageMode, setUseMeasurementsInImageMode] = useState(false)
   const [occasion, setOccasion] = useState<Occasion>('casual')
+  const [showBackground, setShowBackground] = useState(true)
+  const [backendStatus, setBackendStatus] = useState<'checking' | 'online' | 'offline'>('checking')
+
+  useEffect(() => {
+    preloadPoseDetector().catch(() => {})
+    
+    // Check backend health
+    const checkBackend = async () => {
+      try {
+        const res = await fetch(`${API_URL}/health`)
+        if (res.ok) setBackendStatus('online')
+        else setBackendStatus('offline')
+      } catch (e) {
+        console.error("Backend unreachable:", e)
+        setBackendStatus('offline')
+      }
+    }
+    checkBackend()
+  }, [])
 
   const handleModeSelect = (mode: InputMode) => {
     setInputMode(mode)
@@ -68,8 +92,7 @@ export default function App() {
         const fd = new FormData()
         fd.append('file', file, file.name)
         // Use MINIMAL skin analysis endpoint
-        const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:8000'
-        const res = await fetch(`${apiUrl}/instant/skin`, {
+        const res = await fetch(`${API_URL}/instant/skin`, {
           method: 'POST',
           body: fd,
         })
@@ -101,6 +124,45 @@ export default function App() {
     computeAndShowResults()
   }
 
+  const computeLocalInstantResults = () => {
+    const g = gender ?? 'female'
+    const shape =
+      imageBodyShape?.shape ??
+      getBodyShapeFromMeasurements(
+        {
+          shoulder: measurements?.shoulder ?? 40,
+          waist: measurements?.waist ?? 30,
+          hip: measurements?.hip ?? 40,
+          unit: 'in',
+        },
+        g
+      ).shape
+    const u = undertone ?? imageUndertone ?? 'neutral'
+    const palette = getColourPaletteForUndertone(u)
+    const outfits = getOutfitRecommendations(shape, palette, g)
+    const transformedData: AnalysisResult = {
+      bodyShape: {
+        shape,
+        confidence: 0.85,
+        reasoning: 'Instant local analysis',
+      },
+      colourPalette: palette,
+      outfits,
+      inputMode: inputMode || 'measurements',
+      gender: g,
+      occasion,
+    }
+    setResult(transformedData)
+    try {
+      const raw = localStorage.getItem('analysis_history') || '[]'
+      const arr = JSON.parse(raw) as Array<{ shape: string; undertone: string; occasion?: string; ts: number }>
+      arr.push({ shape, undertone: u, occasion, ts: Date.now() })
+      const trimmed = arr.slice(-20)
+      localStorage.setItem('analysis_history', JSON.stringify(trimmed))
+    } catch {}
+    setStep('results')
+  }
+
   const computeAndShowResults = async () => {
     setLoading(true)
     setError(null)
@@ -108,71 +170,77 @@ export default function App() {
     try {
       const g = gender ?? 'female'
       
-      // Use MINIMAL complete endpoint - everything in one call under 10ms
-      // Use image-based body shape if available
       const bodyShapeOverride = imageBodyShape?.shape
+      const controller = new AbortController()
+      const timeoutId = setTimeout(() => controller.abort(), 1500) // 1.5s timeout
       
-      const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:8000'
-      const response = await fetch(`${apiUrl}/instant/complete`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          shoulder: measurements?.shoulder || 40,
-          waist: measurements?.waist || 30,
-          hip: measurements?.hip || 40,
+      let usedLocal = false
+      try {
+        const response = await fetch(`${API_URL}/instant/complete`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            shoulder: measurements?.shoulder || 40,
+            waist: measurements?.waist || 30,
+            hip: measurements?.hip || 40,
+            gender: g,
+            occasion: occasion,
+            body_shape_override: bodyShapeOverride,
+          }),
+          signal: controller.signal,
+        })
+        
+        clearTimeout(timeoutId)
+        
+        if (!response.ok) {
+          throw new Error(`Backend error: ${response.status}`)
+        }
+        
+        const data = await response.json() as any
+        
+        const transformedData: AnalysisResult = {
+          bodyShape: data.analysis.bodyShape,
+          colourPalette: {
+            undertone: data.analysis.undertone as Undertone,
+            primary: data.analysis.palette?.primary || [],
+            secondary: data.analysis.palette?.secondary || [],
+            avoid: data.analysis.palette?.avoid || [],
+            reasoning: `Based on your ${data.analysis.undertone} undertone and ${data.analysis.season} season`,
+          },
+          outfits: data.outfits.map((outfit: any) => ({
+            id: outfit.id,
+            name: outfit.name,
+            description: outfit.description,
+            silhouette: 'custom',
+            colours: outfit.colors,
+            compatibilityScore: outfit.compatibilityScore,
+            reasoning: outfit.reasoning,
+            bodyShapeMatch: data.analysis.bodyShape.shape,
+            colourMatch: data.analysis.undertone,
+            imageUrl: outfit.imageUrl ? (outfit.imageUrl.startsWith('http') ? outfit.imageUrl : `${API_URL}${outfit.imageUrl}`) : null,
+            productUrl: outfit.productUrl || null,
+            altProductUrl: outfit.altProductUrl || null,
+          })),
+          inputMode: inputMode || 'measurements',
           gender: g,
-          occasion: occasion,
-          body_shape_override: bodyShapeOverride,
-        }),
-      })
-      
-      if (!response.ok) {
-        const errorData = await response.json().catch(() => ({}))
-        throw new Error(errorData.detail || `Backend error: ${response.status}`)
+        }
+        
+        setResult(transformedData)
+        setStep('results')
+      } catch (e) {
+        console.warn("Backend failed or timed out, falling back to local analysis:", e)
+        usedLocal = true
+      } finally {
+        clearTimeout(timeoutId)
       }
       
-      const data = await response.json() as any
-      console.log('Response data:', data)
-      console.log(`Analysis completed in ${data.processing_time_ms || 0}ms`)
-      
-      // Transform backend response to frontend format
-      const transformedData: AnalysisResult = {
-        bodyShape: data.analysis.bodyShape,
-        colourPalette: {
-          undertone: data.analysis.undertone as Undertone,
-          primary: data.analysis.palette?.primary || [],
-          secondary: data.analysis.palette?.secondary || [],
-          avoid: data.analysis.palette?.avoid || [],
-          reasoning: `Based on your ${data.analysis.undertone} undertone and ${data.analysis.season} season`,
-        },
-        outfits: data.outfits.map((outfit: any) => ({
-          id: outfit.id,
-          name: outfit.name,
-          description: outfit.description,
-          silhouette: 'custom',
-          colours: outfit.colors,
-          compatibilityScore: outfit.compatibilityScore,
-          reasoning: outfit.reasoning,
-          bodyShapeMatch: data.analysis.bodyShape.shape,
-          colourMatch: data.analysis.undertone,
-          imageUrl: outfit.imageUrl || null,
-          productUrl: outfit.productUrl || null,    // Amazon link
-          altProductUrl: outfit.altProductUrl || null,  // Myntra link
-        })),
-        inputMode: inputMode || 'measurements',
-        gender: g,
+      if (usedLocal) {
+        computeLocalInstantResults()
       }
-      
-      // Validate data structure
-      if (!transformedData.bodyShape || !transformedData.colourPalette || !transformedData.outfits) {
-        throw new Error('Invalid response format from server')
-      }
-      
-      setResult(transformedData)
-      setStep('results')
     } catch (e) {
       console.error(e)
-      setError(e instanceof Error ? e.message : 'Could not reach styling backend. Is the Python server running on port 8000?')
+      // Final fallback if everything fails
+      computeLocalInstantResults()
     } finally {
       setLoading(false)
     }
@@ -204,6 +272,10 @@ export default function App() {
     <div className="app">
       <ThreeBackground />
       <header className="header">
+        <div className="backend-status" style={{ position: 'absolute', top: '10px', right: '10px', fontSize: '0.8rem', display: 'flex', alignItems: 'center', gap: '5px' }}>
+          <span style={{ width: '8px', height: '8px', borderRadius: '50%', backgroundColor: backendStatus === 'online' ? '#4ade80' : backendStatus === 'offline' ? '#f87171' : '#fbbf24' }}></span>
+          {backendStatus === 'online' ? 'Backend Connected' : backendStatus === 'offline' ? 'Backend Offline' : 'Checking Backend...'}
+        </div>
         <h1 className="logo">StyleMatch</h1>
         <p className="tagline">Personal fashion advice from your shape & colour</p>
       </header>

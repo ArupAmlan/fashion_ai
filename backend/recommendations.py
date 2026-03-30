@@ -103,7 +103,7 @@ OUTFIT_TEMPLATES_FEMALE: List[OutfitTemplate] = [
             Undertone.neutral: ["Dusty rose", "Sage", "Navy", "Taupe"],
         },
         silhouette="Fitted waist, V-neck, flattering wrap",
-        imageUrl="http://localhost:8000/generate_image?prompt=fashion%20photo%20of%20a%20woman%20wearing%20a%20wrap%20dress%20professional%20studio%20lighting%20white%20background"
+        imageUrl="/generate_image?prompt=fashion%20photo%20of%20a%20woman%20wearing%20a%20wrap%20dress%20professional%20studio%20lighting%20white%20background"
     ),
     OutfitTemplate(
         id="structured-blazer",
@@ -116,7 +116,7 @@ OUTFIT_TEMPLATES_FEMALE: List[OutfitTemplate] = [
             Undertone.neutral: ["Charcoal", "Navy", "Taupe", "Dusty rose"],
         },
         silhouette="Structured shoulders, clean lines",
-        imageUrl="http://localhost:8000/generate_image?prompt=fashion%20photo%20of%20a%20woman%20wearing%20a%20structured%20blazer%20and%20tailored%20trousers%20professional%20studio%20lighting%20white%20background"
+        imageUrl="/generate_image?prompt=fashion%20photo%20of%20a%20woman%20wearing%20a%20structured%20blazer%20and%20tailored%20trousers%20professional%20studio%20lighting%20white%20background"
     ),
     OutfitTemplate(
         id="a-line-midi",
@@ -129,7 +129,7 @@ OUTFIT_TEMPLATES_FEMALE: List[OutfitTemplate] = [
             Undertone.neutral: ["Blush", "Sage", "Mauve", "Soft white"],
         },
         silhouette="A-line skirt, fitted or tucked top",
-        imageUrl="http://localhost:8000/generate_image?prompt=fashion%20photo%20of%20a%20woman%20wearing%20an%20A-line%20midi%20skirt%20and%20fitted%20top%20professional%20studio%20lighting%20white%20background"
+        imageUrl="/generate_image?prompt=fashion%20photo%20of%20a%20woman%20wearing%20an%20A-line%20midi%20skirt%20and%20fitted%20top%20professional%20studio%20lighting%20white%20background"
     ),
     OutfitTemplate(
         id="v-neck-flowy",
@@ -142,7 +142,7 @@ OUTFIT_TEMPLATES_FEMALE: List[OutfitTemplate] = [
             Undertone.neutral: ["Blush", "Sage", "Soft white", "Mauve"],
         },
         silhouette="V-neck, flowy fabric, straight legs",
-        imageUrl="http://localhost:8000/generate_image?prompt=fashion%20photo%20of%20a%20woman%20wearing%20a%20V-neck%20flowy%20top%20and%20straight-leg%20trousers%20professional%20studio%20lighting%20white%20background"
+        imageUrl="/generate_image?prompt=fashion%20photo%20of%20a%20woman%20wearing%20a%20V-neck%20flowy%20top%20and%20straight-leg%20trousers%20professional%20studio%20lighting%20white%20background"
     ),
     OutfitTemplate(
         id="empire-waist-dress",
@@ -155,7 +155,7 @@ OUTFIT_TEMPLATES_FEMALE: List[OutfitTemplate] = [
             Undertone.neutral: ["Dusty rose", "Sage", "Mauve", "Navy"],
         },
         silhouette="Empire waist, flowy skirt",
-        imageUrl="http://localhost:8000/generate_image?prompt=fashion%20photo%20of%20a%20woman%20wearing%20an%20empire%20waist%20dress%20professional%20studio%20lighting%20white%20background"
+        imageUrl="/generate_image?prompt=fashion%20photo%20of%20a%20woman%20wearing%20an%20empire%20waist%20dress%20professional%20studio%20lighting%20white%20background"
     ),
     OutfitTemplate(
         id="wide-leg-jumpsuit",
@@ -168,7 +168,7 @@ OUTFIT_TEMPLATES_FEMALE: List[OutfitTemplate] = [
             Undertone.neutral: ["Charcoal", "Navy", "Taupe", "Dusty rose"],
         },
         silhouette="Wide legs, balanced proportions",
-        imageUrl="http://localhost:8000/generate_image?prompt=fashion%20photo%20of%20a%20woman%20wearing%20a%20wide-leg%20jumpsuit%20professional%20studio%20lighting%20white%20background"
+        imageUrl="/generate_image?prompt=fashion%20photo%20of%20a%20woman%20wearing%20a%20wide-leg%20jumpsuit%20professional%20studio%20lighting%20white%20background"
     ),
     OutfitTemplate(
         id="peplum-top",
@@ -181,7 +181,7 @@ OUTFIT_TEMPLATES_FEMALE: List[OutfitTemplate] = [
             Undertone.neutral: ["Blush", "Sage", "Mauve", "Charcoal"],
         },
         silhouette="Peplum waist, slim lower half",
-        imageUrl="http://localhost:8000/generate_image?prompt=fashion%20photo%20of%20a%20woman%20wearing%20a%20peplum%20top%20and%20slim%20trousers%20professional%20studio%20lighting%20white%20background"
+        imageUrl="/generate_image?prompt=fashion%20photo%20of%20a%20woman%20wearing%20a%20peplum%20top%20and%20slim%20trousers%20professional%20studio%20lighting%20white%20background"
     ),
     OutfitTemplate(
         id="layered-outerwear",
@@ -194,7 +194,7 @@ OUTFIT_TEMPLATES_FEMALE: List[OutfitTemplate] = [
             Undertone.neutral: ["Taupe", "Navy", "Dusty rose", "Charcoal"],
         },
         silhouette="Layers with waist definition",
-        imageUrl="http://localhost:8000/generate_image?prompt=fashion%20photo%20of%20a%20woman%20wearing%20layered%20outerwear%20with%20a%20belt%20professional%20studio%20lighting%20white%20background"
+        imageUrl="/generate_image?prompt=fashion%20photo%20of%20a%20woman%20wearing%20layered%20outerwear%20with%20a%20belt%20professional%20studio%20lighting%20white%20background"
     ),
 ]
 
@@ -211,7 +211,7 @@ OUTFIT_TEMPLATES_MALE: List[OutfitTemplate] = [
             Undertone.neutral: ["Taupe", "Navy", "Charcoal", "Soft white"],
         },
         silhouette="Layered top, straight chinos",
-        imageUrl="http://localhost:8000/generate_image?prompt=fashion%20photo%20of%20a%20man%20wearing%20a%20t-shirt%20overshirt%20and%20chinos%20professional%20studio%20lighting%20white%20background"
+        imageUrl="/generate_image?prompt=fashion%20photo%20of%20a%20man%20wearing%20a%20t-shirt%20overshirt%20and%20chinos%20professional%20studio%20lighting%20white%20background"
     ),
     OutfitTemplate(
         id="oxford-straight-jeans",
@@ -224,7 +224,7 @@ OUTFIT_TEMPLATES_MALE: List[OutfitTemplate] = [
             Undertone.neutral: ["Soft white", "Navy", "Taupe", "Charcoal"],
         },
         silhouette="Clean shoulder line, straight legs",
-        imageUrl="http://localhost:8000/generate_image?prompt=fashion%20photo%20of%20a%20man%20wearing%20an%20oxford%20shirt%20and%20straight-leg%20jeans%20professional%20studio%20lighting%20white%20background"
+        imageUrl="/generate_image?prompt=fashion%20photo%20of%20a%20man%20wearing%20an%20oxford%20shirt%20and%20straight-leg%20jeans%20professional%20studio%20lighting%20white%20background"
     ),
     OutfitTemplate(
         id="polo-tapered-trousers",
@@ -237,7 +237,7 @@ OUTFIT_TEMPLATES_MALE: List[OutfitTemplate] = [
             Undertone.neutral: ["Sage", "Navy", "Mauve", "Soft white"],
         },
         silhouette="Structured collar, tapered leg",
-        imageUrl="http://localhost:8000/generate_image?prompt=fashion%20photo%20of%20a%20man%20wearing%20a%20polo%20shirt%20and%20tapered%20trousers%20professional%20studio%20lighting%20white%20background"
+        imageUrl="/generate_image?prompt=fashion%20photo%20of%20a%20man%20wearing%20a%20polo%20shirt%20and%20tapered%20trousers%20professional%20studio%20lighting%20white%20background"
     ),
     OutfitTemplate(
         id="crewneck-bomber",
@@ -250,7 +250,7 @@ OUTFIT_TEMPLATES_MALE: List[OutfitTemplate] = [
             Undertone.neutral: ["Charcoal", "Taupe", "Navy", "Dusty rose"],
         },
         silhouette="Structured outerwear, straight fit",
-        imageUrl="http://localhost:8000/generate_image?prompt=fashion%20photo%20of%20a%20man%20wearing%20a%20crewneck%20knit%20and%20bomber%20jacket%20professional%20studio%20lighting%20white%20background"
+        imageUrl="/generate_image?prompt=fashion%20photo%20of%20a%20man%20wearing%20a%20crewneck%20knit%20and%20bomber%20jacket%20professional%20studio%20lighting%20white%20background"
     ),
     OutfitTemplate(
         id="open-collar-wide-leg",
@@ -263,7 +263,7 @@ OUTFIT_TEMPLATES_MALE: List[OutfitTemplate] = [
             Undertone.neutral: ["Soft white", "Taupe", "Navy", "Sage"],
         },
         silhouette="Open collar, relaxed lower half",
-        imageUrl="http://localhost:8000/generate_image?prompt=fashion%20photo%20of%20a%20man%20wearing%20an%20open-collar%20shirt%20and%20wide-leg%20trousers%20professional%20studio%20lighting%20white%20background"
+        imageUrl="/generate_image?prompt=fashion%20photo%20of%20a%20man%20wearing%20an%20open-collar%20shirt%20and%20wide-leg%20trousers%20professional%20studio%20lighting%20white%20background"
     ),
 ]
 
@@ -344,7 +344,7 @@ def get_outfit_recommendations(body_shape: BodyShape, palette: ColourPalette, ge
                 reasoning=f"{body_match} {colour_match}",
                 bodyShapeMatch=silhouette_rule.reasoning if silhouette_rule else "Balanced silhouette.",
                 colourMatch=f"Best in: {', '.join(suggested_colours)}.",
-                imageUrl=None,
+                imageUrl=t.imageUrl,
                 productUrl=productUrl,
                 altProductUrl=altProductUrl,
             )

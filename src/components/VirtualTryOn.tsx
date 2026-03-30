@@ -49,7 +49,7 @@ export const VirtualTryOn: React.FC<VirtualTryOnProps> = ({ onBack }) => {
       formData.append("garment_image", garmentImage);
 
       // Use VTON endpoint
-      const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:8000'
+      const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:8000';
       const response = await fetch(`${apiUrl}/vton`, {
         method: "POST",
         body: formData,
@@ -67,7 +67,12 @@ export const VirtualTryOn: React.FC<VirtualTryOnProps> = ({ onBack }) => {
       console.log(`VTON request completed in ${duration}s`);
 
     } catch (err) {
-      setError(err instanceof Error ? err.message : "An error occurred.");
+      const message = err instanceof Error ? err.message : "An error occurred.";
+      if (message.includes("Failed to fetch") || message.includes("NetworkError")) {
+        setError("Virtual Try-On requires a live backend. Please ensure the Python server is running and VITE_API_URL is configured.");
+      } else {
+        setError(message);
+      }
     } finally {
       setLoading(false);
     }
