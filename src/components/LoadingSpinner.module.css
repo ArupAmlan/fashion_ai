@@ -1,0 +1,101 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1.5rem;
+  padding: 2rem;
+}
+
+.spinner {
+  position: relative;
+  border-radius: 50%;
+}
+
+.spinner::before,
+.spinner::after {
+  content: '';
+  position: absolute;
+  border-radius: 50%;
+}
+
+.spinner::before {
+  inset: 0;
+  border: 3px solid transparent;
+  border-top-color: #f472b6;
+  border-right-color: #a78bfa;
+  animation: spin 1s linear infinite;
+}
+
+.spinner::after {
+  inset: 4px;
+  border: 3px solid transparent;
+  border-bottom-color: #60a5fa;
+  border-left-color: #f472b6;
+  animation: spin 1.5s linear infinite reverse;
+}
+
+.small {
+  width: 32px;
+  height: 32px;
+}
+
+.small::before,
+.small::after {
+  border-width: 2px;
+}
+
+.small::after {
+  inset: 3px;
+}
+
+.medium {
+  width: 56px;
+  height: 56px;
+}
+
+.medium::before,
+.medium::after {
+  border-width: 3px;
+}
+
+.medium::after {
+  inset: 4px;
+}
+
+.large {
+  width: 80px;
+  height: 80px;
+}
+
+.large::before,
+.large::after {
+  border-width: 4px;
+}
+
+.large::after {
+  inset: 6px;
+}
+
+.message {
+  color: var(--text-muted);
+  font-size: 1rem;
+  margin: 0;
+  font-weight: 500;
+  animation: pulse 2s ease-in-out infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 0.6;
+  }
+  50% {
+    opacity: 1;
+  }
+}

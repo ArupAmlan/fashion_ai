@@ -288,12 +288,15 @@ export function getOutfitRecommendations(
   palette: ColourPalette,
   gender: Gender
 ): OutfitSuggestion[] {
+  const toAmazon = (q: string) => `https://www.amazon.in/s?k=${encodeURIComponent(q)}`
+  const toFlipkart = (q: string) => `https://www.flipkart.com/search?q=${encodeURIComponent(q)}`
   const templates =
     gender === 'male' ? OUTFIT_TEMPLATES_MALE : gender === 'female' ? OUTFIT_TEMPLATES_FEMALE : [...OUTFIT_TEMPLATES_FEMALE, ...OUTFIT_TEMPLATES_MALE]
 
   const results: OutfitSuggestion[] = templates.map((t) => {
     const { score, bodyMatch, colourMatch, suggestedColours } = scoreOutfit(t, bodyShape, palette, gender)
     const silhouetteRule = getSilhouetteForShape(bodyShape, gender)
+    const query = `${t.name} ${suggestedColours[0] || ''}`.trim()
     return {
       id: t.id,
       name: t.name,
@@ -304,6 +307,8 @@ export function getOutfitRecommendations(
       reasoning: `${bodyMatch} ${colourMatch}`,
       bodyShapeMatch: silhouetteRule?.reasoning ?? 'Balanced silhouette.',
       colourMatch: `Best in: ${suggestedColours.join(', ')}.`,
+      productUrl: toAmazon(query),
+      altProductUrl: toFlipkart(query),
     }
   })
 

@@ -1,7 +1,8 @@
 from dataclasses import dataclass
 from typing import List
+from urllib.parse import quote_plus
 
-from .models import BodyShape, ColourPalette, Gender, OutfitSuggestion, Undertone
+from models import BodyShape, ColourPalette, Gender, OutfitSuggestion, Undertone
 
 
 @dataclass
@@ -311,6 +312,13 @@ def _score_outfit(
     return min(100.0, score), body_match, colour_match_text, primary_colours[:5]
 
 
+def _shop_links(name: str) -> tuple[str, str]:
+    q = quote_plus(name)
+    amazon = f"https://www.amazon.in/s?k={q}"
+    flipkart = f"https://www.flipkart.com/search?q={q}"
+    return amazon, flipkart
+
+
 def get_outfit_recommendations(body_shape: BodyShape, palette: ColourPalette, gender: Gender) -> list[OutfitSuggestion]:
     if gender == Gender.male:
         templates = OUTFIT_TEMPLATES_MALE
@@ -324,6 +332,7 @@ def get_outfit_recommendations(body_shape: BodyShape, palette: ColourPalette, ge
     for t in templates:
         score, body_match, colour_match, suggested_colours = _score_outfit(t, body_shape, palette, gender)
         silhouette_rule = _get_silhouette_for_shape(body_shape, gender)
+        productUrl, altProductUrl = _shop_links(t.name)
         results.append(
             OutfitSuggestion(
                 id=t.id,
@@ -335,7 +344,9 @@ def get_outfit_recommendations(body_shape: BodyShape, palette: ColourPalette, ge
                 reasoning=f"{body_match} {colour_match}",
                 bodyShapeMatch=silhouette_rule.reasoning if silhouette_rule else "Balanced silhouette.",
                 colourMatch=f"Best in: {', '.join(suggested_colours)}.",
-                imageUrl=t.imageUrl,
+                imageUrl=None,
+                productUrl=productUrl,
+                altProductUrl=altProductUrl,
             )
         )
 

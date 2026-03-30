@@ -63,6 +63,8 @@ class OutfitSuggestion(BaseModel):
     bodyShapeMatch: str
     colourMatch: str
     imageUrl: Optional[str] = None
+    productUrl: Optional[str] = None
+    altProductUrl: Optional[str] = None
 
 
 class AnalysisResult(BaseModel):

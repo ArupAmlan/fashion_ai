@@ -4,14 +4,17 @@ import { MeasurementForm } from './components/MeasurementForm'
 import { ImageUpload } from './components/ImageUpload'
 import { UndertoneStep } from './components/UndertoneStep'
 import { Results } from './components/Results'
-import type { InputMode, AnalysisResult, Measurements, Undertone, Gender } from './types'
+import { LoadingSpinner } from './components/LoadingSpinner'
+import type { InputMode, AnalysisResult, Measurements, Undertone, Gender, Occasion } from './types'
 import { getBodyShapeFromKeypointsWithGender } from './lib/imageAnalysis'
 import { detectPoseFromImageSource, createImageFromFile } from './lib/poseDetection'
 import { getUndertoneFromImage } from './lib/skinUndertone'
 import { GenderSelect } from './components/GenderSelect'
+import { OccasionSelect } from './components/OccasionSelect'
 import { VirtualTryOn } from './components/VirtualTryOn'
+import { ThreeBackground } from './components/ThreeBackground'
 
-type Step = 'mode' | 'gender' | 'input' | 'undertone' | 'results' | 'vton'
+type Step = 'mode' | 'gender' | 'input' | 'undertone' | 'occasion' | 'results' | 'vton'
 
 export default function App() {
   const [step, setStep] = useState<Step>('mode')
@@ -25,6 +28,7 @@ export default function App() {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [useMeasurementsInImageMode, setUseMeasurementsInImageMode] = useState(false)
+  const [occasion, setOccasion] = useState<Occasion>('casual')
 
   const handleModeSelect = (mode: InputMode) => {
     setInputMode(mode)
@@ -63,13 +67,15 @@ export default function App() {
       try {
         const fd = new FormData()
         fd.append('file', file, file.name)
-        const res = await fetch('http://127.0.0.1:8000/skin_tone', {
+        // Use MINIMAL skin analysis endpoint
+        const res = await fetch('http://localhost:8000/instant/skin', {
           method: 'POST',
           body: fd,
         })
         if (res.ok) {
-          const data: { undertone: Undertone } = await res.json()
+          const data: { undertone: Undertone; processing_time_ms?: number } = await res.json()
           undertoneComputed = data.undertone
+          console.log(`Skin analysis completed in ${data.processing_time_ms || 0}ms`)
         }
       } catch (_) {
         // ignore, will fall back to client-side estimation
@@ -86,42 +92,96 @@ export default function App() {
 
   const handleUndertoneSubmit = (u: Undertone) => {
     setUndertone(u)
-    computeAndShowResults(u)
+    setStep('occasion')
+  }
+  
+  const handleOccasionSelect = (o: Occasion) => {
+    setOccasion(o)
+    computeAndShowResults()
   }
 
-  const computeAndShowResults = (finalUndertone: Undertone) => {
-    const g = gender ?? 'female'
-    const input: any = {
-      gender: g,
-      inputMode: inputMode ?? 'measurements',
-      undertone: finalUndertone,
-      measurements: measurements ?? undefined,
-      imageBodyShape: inputMode === 'image' ? imageBodyShape ?? undefined : undefined,
+  const computeAndShowResults = async () => {
+    setLoading(true)
+    setError(null)
+    
+    try {
+      const g = gender ?? 'female'
+      
+      // Use MINIMAL complete endpoint - everything in one call under 10ms
+      // Use image-based body shape if available
+      const bodyShapeOverride = imageBodyShape?.shape
+      
+      const response = await fetch('http://localhost:8000/instant/complete', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          shoulder: measurements?.shoulder || 40,
+          waist: measurements?.waist || 30,
+          hip: measurements?.hip || 40,
+          gender: g,
+          occasion: occasion,
+          body_shape_override: bodyShapeOverride,
+        }),
+      })
+      
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}))
+        throw new Error(errorData.detail || `Backend error: ${response.status}`)
+      }
+      
+      const data = await response.json() as any
+      console.log('Response data:', data)
+      console.log(`Analysis completed in ${data.processing_time_ms || 0}ms`)
+      
+      // Transform backend response to frontend format
+      const transformedData: AnalysisResult = {
+        bodyShape: data.analysis.bodyShape,
+        colourPalette: {
+          undertone: data.analysis.undertone as Undertone,
+          primary: data.analysis.palette?.primary || [],
+          secondary: data.analysis.palette?.secondary || [],
+          avoid: data.analysis.palette?.avoid || [],
+          reasoning: `Based on your ${data.analysis.undertone} undertone and ${data.analysis.season} season`,
+        },
+        outfits: data.outfits.map((outfit: any) => ({
+          id: outfit.id,
+          name: outfit.name,
+          description: outfit.description,
+          silhouette: 'custom',
+          colours: outfit.colors,
+          compatibilityScore: outfit.compatibilityScore,
+          reasoning: outfit.reasoning,
+          bodyShapeMatch: data.analysis.bodyShape.shape,
+          colourMatch: data.analysis.undertone,
+          imageUrl: outfit.imageUrl || null,
+          productUrl: outfit.productUrl || null,    // Amazon link
+          altProductUrl: outfit.altProductUrl || null,  // Myntra link
+        })),
+        inputMode: inputMode || 'measurements',
+        gender: g,
+      }
+      
+      // Validate data structure
+      if (!transformedData.bodyShape || !transformedData.colourPalette || !transformedData.outfits) {
+        throw new Error('Invalid response format from server')
+      }
+      
+      setResult(transformedData)
+      setStep('results')
+    } catch (e) {
+      console.error(e)
+      setError(e instanceof Error ? e.message : 'Could not reach styling backend. Is the Python server running on port 8000?')
+    } finally {
+      setLoading(false)
     }
-
-    // Call Python backend; fall back to local error message if it fails.
-    fetch('http://127.0.0.1:8000/analyze', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(input),
-    })
-      .then(async (res) => {
-        if (!res.ok) throw new Error(`Backend error: ${res.status}`)
-        const data: AnalysisResult = await res.json()
-        setResult(data)
-        setStep('results')
-      })
-      .catch((e) => {
-        console.error(e)
-        setError('Could not reach styling backend. Is the Python server running on port 8000?')
-      })
   }
 
   const handleBack = () => {
     if (step === 'gender') setStep('mode')
     else if (step === 'input') setStep('gender')
     else if (step === 'undertone') setStep('input')
-    else if (step === 'results') setStep('undertone')
+    else if (step === 'occasion') setStep('undertone')
+    else if (step === 'results') setStep('occasion')
     else if (step === 'vton') setStep('results')
     setError(null)
   }
@@ -140,25 +200,32 @@ export default function App() {
 
   return (
     <div className="app">
+      <ThreeBackground />
       <header className="header">
         <h1 className="logo">StyleMatch</h1>
         <p className="tagline">Personal fashion advice from your shape & colour</p>
       </header>
 
       <main className="main">
-        {step === 'mode' && (
+        {loading && (
+          <div className="loading-overlay">
+            <LoadingSpinner message="Analyzing your style..." size="large" />
+          </div>
+        )}
+        
+        {!loading && step === 'mode' && (
           <ModeSelect onSelect={handleModeSelect} />
         )}
 
-        {step === 'gender' && (
+        {!loading && step === 'gender' && (
           <GenderSelect onSelect={handleGenderSelect} onBack={handleBack} />
         )}
 
-        {step === 'input' && inputMode === 'measurements' && (
+        {!loading && step === 'input' && inputMode === 'measurements' && (
           <MeasurementForm onSubmit={handleMeasurementsSubmit} onBack={handleBack} />
         )}
 
-        {step === 'input' && inputMode === 'image' && !useMeasurementsInImageMode && (
+        {!loading && step === 'input' && inputMode === 'image' && !useMeasurementsInImageMode && (
           <ImageUpload
             onImageSubmit={handleImageSubmit}
             onUseMeasurements={() => setUseMeasurementsInImageMode(true)}
@@ -168,27 +235,48 @@ export default function App() {
           />
         )}
 
-        {step === 'input' && inputMode === 'image' && useMeasurementsInImageMode && (
+        {!loading && step === 'input' && inputMode === 'image' && useMeasurementsInImageMode && (
           <MeasurementForm onSubmit={handleMeasurementsSubmit} onBack={() => setUseMeasurementsInImageMode(false)} />
         )}
 
-        {step === 'undertone' && (
+        {!loading && step === 'undertone' && (
           <UndertoneStep
             onSubmit={handleUndertoneSubmit}
             onBack={handleBack}
             suggestedFromImage={imageUndertone}
           />
         )}
+        
+        {!loading && step === 'occasion' && (
+          <OccasionSelect
+            onSelect={handleOccasionSelect}
+            onBack={() => setStep('undertone')}
+          />
+        )}
+        
+        {!loading && error && (
+          <div style={{ padding: '20px', textAlign: 'center', color: 'red' }}>
+            <p>Error: {error}</p>
+            <button onClick={() => setError(null)}>Dismiss</button>
+          </div>
+        )}
 
-        {step === 'results' && result && (
+        {!loading && step === 'results' && result && (
           <Results 
             result={result} 
             onStartOver={handleStartOver}
             onOpenVTON={() => setStep('vton')}
           />
         )}
+        
+        {!loading && step === 'results' && !result && (
+          <div style={{ padding: '20px', textAlign: 'center' }}>
+            <p>No results available. Please try again.</p>
+            <button onClick={handleStartOver}>Start Over</button>
+          </div>
+        )}
 
-        {step === 'vton' && (
+        {!loading && step === 'vton' && (
           <VirtualTryOn onBack={() => setStep('results')} />
         )}
 

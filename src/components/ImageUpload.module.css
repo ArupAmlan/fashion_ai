@@ -2,6 +2,7 @@
   max-width: 420px;
   margin: 0 auto;
   padding: 2rem 1rem;
+  animation: fadeInUp 400ms ease-out both;
 }
 
 .heading {
@@ -24,6 +25,14 @@
   border: 1px dashed var(--border);
   border-radius: var(--radius);
   margin-bottom: 1rem;
+  transition: transform 200ms ease, background 200ms ease, border-color 200ms ease, box-shadow 200ms ease;
+}
+
+.uploadZone:hover {
+  transform: translateY(-2px);
+  background: var(--surface-elevated);
+  border-color: var(--accent);
+  box-shadow: 0 10px 20px rgba(0,0,0,0.35);
 }
 
 .hiddenInput {
@@ -41,10 +50,13 @@
   padding: 0.75rem 1.25rem;
   border-radius: var(--radius-sm);
   font-weight: 500;
+  transition: background 200ms ease, transform 200ms ease, box-shadow 200ms ease;
 }
 
 .uploadBtn:hover:not(:disabled) {
   background: var(--accent-dim);
+  transform: translateY(-1px);
+  box-shadow: 0 8px 16px rgba(0,0,0,0.35);
 }
 
 .uploadBtn:disabled {
@@ -80,10 +92,13 @@
   padding: 0.65rem 1rem;
   border-radius: var(--radius-sm);
   font-size: 0.95rem;
+  transition: background 200ms ease, transform 200ms ease, box-shadow 200ms ease;
 }
 
 .measurementsLink:hover:not(:disabled) {
   background: rgba(201, 168, 108, 0.1);
+  transform: translateY(-1px);
+  box-shadow: 0 8px 16px rgba(0,0,0,0.35);
 }
 
 .actions {
@@ -96,9 +111,16 @@
   border: 1px solid var(--border);
   padding: 0.65rem 1rem;
   border-radius: var(--radius-sm);
+  transition: color 200ms ease, border-color 200ms ease, transform 200ms ease;
 }
 
 .backBtn:hover {
   color: var(--text);
   border-color: var(--text-muted);
+  transform: translateY(-1px);
+}
+
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: translateY(0); }
 }

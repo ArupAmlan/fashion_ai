@@ -13,6 +13,8 @@ export type PoseKeypoints = {
   rightShoulder?: { x: number; y: number }
   leftHip?: { x: number; y: number }
   rightHip?: { x: number; y: number }
+  leftElbow?: { x: number; y: number }
+  rightElbow?: { x: number; y: number }
 }
 
 function distance(a: { x: number; y: number }, b: { x: number; y: number }): number {
@@ -32,7 +34,17 @@ export function keypointsToMeasurements(keypoints: PoseKeypoints): Measurements 
 
   const shoulder = distance(ls, rs)
   const hip = distance(lh, rh)
-  const waist = Math.min(shoulder, hip) * 0.85
+  
+  // Refined waist estimation:
+  // Use elbows as a proxy for waist level. If elbows are detected, we can 
+  // estimate the waist width at that vertical midpoint.
+  // For now, we use a more dynamic ratio: 
+  // If shoulders and hips are balanced, we assume a slightly more defined waist (0.78)
+  // which can trigger "Hourglass" if the measurements are close enough.
+  const isBalanced = Math.abs(shoulder - hip) / Math.max(shoulder, hip) < 0.1
+  const ratio = isBalanced ? 0.78 : 0.85
+  const waist = Math.min(shoulder, hip) * ratio
+  
   return {
     shoulder,
     waist,

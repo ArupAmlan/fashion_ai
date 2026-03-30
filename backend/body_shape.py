@@ -1,4 +1,4 @@
-from .models import BodyShape, BodyShapeResult, Gender, Measurements
+from models import BodyShape, BodyShapeResult, Gender, Measurements
 
 
 def _within_percent(a: float, b: float, pct: float) -> bool:

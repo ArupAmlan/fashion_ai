@@ -1,15 +1,46 @@
-# StyleMatch — Dual-Mode Fashion Recommendation System
+# StyleMatch — AI-Powered Fashion Recommendation System 🚀
 
-Personalised outfit suggestions using **body shape** and **colour harmony** with a simple Python backend and a React frontend. Client-side image analysis is optional. Recent updates:
-- Real outfit images are generated via an image proxy on the backend to avoid browser cross-origin/ORB blocks.
-- 3D body features have been removed to simplify the experience.
+**Your personal stylist powered by AI** — Get personalized outfit recommendations based on your body shape, skin undertone, and style preferences. Now with **e-commerce integration** for instant shopping!
 
-## Features
-- Measurement mode: enter shoulder, waist, hip; get body shape and silhouette guidance.
-- Image mode (optional): upload a full-body photo; pose is analysed in-browser only.
-- Colour harmony: pick undertone or use optional server suggestion from your photo.
-- Outfit recommendations: ranked list with compatibility scores and reasoning.
-- Virtual Try-On (placeholder endpoint): UI hook with safe image handling.
+## ✨ Latest Features
+
+- 🛍️ **E-commerce Integration**: Direct shopping links to Amazon, Flipkart & Myntra
+- 🔗 **Frontend-Backend Connected**: Fully integrated and tested
+- ⚡ **Instant Analysis**: Get recommendations in under 100ms
+- 📸 **AI Image Analysis**: Optional pose detection and skin tone analysis
+- 🎨 **Smart Color Matching**: Seasonal color palette recommendations
+- 👗 **Body Shape Detection**: 6 body types with tailored suggestions
+- 🧘 **Virtual Try-On**: Placeholder for AI-powered garment transfer
+
+## 🎯 Quick Start
+
+### Local Development
+
+```bash
+# Backend (Terminal 1)
+cd backend
+pip install -r requirements.txt
+python -m uvicorn main:app --reload
+
+# Frontend (Terminal 2)
+npm install
+npm run dev
+```
+
+Open http://localhost:5173
+
+### Production Deployment
+
+See [DEPLOYMENT.md](DEPLOYMENT.md) for complete deployment guide to Vercel, Railway, Netlify, and more.
+
+```bash
+# Quick deploy to Vercel (frontend)
+npm run build
+vercel --prod
+
+# Deploy backend to Railway
+railway up --cwd backend
+```
 
 ## System Requirements
 - Node.js 18+

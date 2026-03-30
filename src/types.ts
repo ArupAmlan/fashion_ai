@@ -14,6 +14,8 @@ export type InputMode = 'measurements' | 'image'
 
 export type Gender = 'female' | 'male' | 'non_binary'
 
+export type Occasion = 'casual' | 'formal' | 'party' | 'sport';
+
 export interface Measurements {
   shoulder: number // inches or cm
   waist: number
@@ -46,6 +48,8 @@ export interface OutfitSuggestion {
   bodyShapeMatch: string
   colourMatch: string
   imageUrl?: string
+  productUrl?: string
+  altProductUrl?: string
 }
 
 export interface AnalysisResult {
@@ -54,4 +58,5 @@ export interface AnalysisResult {
   outfits: OutfitSuggestion[]
   inputMode: InputMode
   gender: Gender
+  occasion?: Occasion
 }

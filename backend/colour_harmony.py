@@ -1,4 +1,4 @@
-from .models import ColourPalette, Undertone
+from models import ColourPalette, Undertone
 
 
 UNDERTONE_PALETTES = {

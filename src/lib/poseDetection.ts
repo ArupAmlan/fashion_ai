@@ -11,13 +11,29 @@ export interface PoseDetectionResult {
   error?: string
 }
 
+let cachedDetector: any = null
+
 async function loadPoseDetector(): Promise<unknown> {
+  if (cachedDetector) return cachedDetector
   const poseDetection = await import('@tensorflow-models/pose-detection')
   const tf = await import('@tensorflow/tfjs-core')
-  await import('@tensorflow/tfjs-backend-webgl')
+  let backendSet = false
+  try {
+    await import('@tensorflow/tfjs-backend-webgpu')
+    await tf.setBackend('webgpu' as any)
+    backendSet = true
+  } catch {}
+  if (!backendSet) {
+    await import('@tensorflow/tfjs-backend-webgl')
+    await tf.setBackend('webgl' as any)
+  }
   await tf.ready()
-  const detector = await poseDetection.createDetector(poseDetection.SupportedModels.MoveNet)
-  return detector
+  cachedDetector = await poseDetection.createDetector(poseDetection.SupportedModels.MoveNet)
+  return cachedDetector
+}
+
+export async function preloadPoseDetector(): Promise<void> {
+  await loadPoseDetector()
 }
 
 function mapKeypoints(keypoints: Array<{ name?: string; x: number; y: number }>): PoseKeypoints {
@@ -30,6 +46,8 @@ function mapKeypoints(keypoints: Array<{ name?: string; x: number; y: number }>)
     rightShoulder: byName['right_shoulder'],
     leftHip: byName['left_hip'],
     rightHip: byName['right_hip'],
+    leftElbow: byName['left_elbow'],
+    rightElbow: byName['right_elbow'],
   }
 }
 
@@ -37,8 +55,23 @@ export async function detectPoseFromImageSource(
   imageSource: HTMLImageElement | HTMLCanvasElement
 ): Promise<PoseDetectionResult> {
   try {
-    const detector = await loadPoseDetector() as { estimatePoses: (img: HTMLImageElement | HTMLCanvasElement) => Promise<Array<{ keypoints: Array<{ name?: string; x: number; y: number }> }>> }
-    const poses = await detector.estimatePoses(imageSource)
+    const detector = await loadPoseDetector() as any
+    let input: HTMLImageElement | HTMLCanvasElement = imageSource
+    if (imageSource instanceof HTMLImageElement) {
+      const maxSide = 320
+      const w = imageSource.naturalWidth || imageSource.width
+      const h = imageSource.naturalHeight || imageSource.height
+      const scale = Math.min(1, maxSide / Math.max(w, h))
+      const cw = Math.max(1, Math.floor(w * scale))
+      const ch = Math.max(1, Math.floor(h * scale))
+      const canvas = document.createElement('canvas')
+      canvas.width = cw
+      canvas.height = ch
+      const ctx = canvas.getContext('2d')
+      if (ctx) ctx.drawImage(imageSource, 0, 0, cw, ch)
+      input = canvas
+    }
+    const poses = await detector.estimatePoses(input)
     if (!poses.length || !poses[0].keypoints) {
       return { keypoints: {}, success: false, error: 'No pose detected. Try a clearer full-body image.' }
     }

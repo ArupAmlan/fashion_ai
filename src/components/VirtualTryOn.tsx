@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
+import styles from './VirtualTryOn.module.css';
 
 interface VirtualTryOnProps {
   onBack: () => void;
@@ -6,20 +7,29 @@ interface VirtualTryOnProps {
 
 export const VirtualTryOn: React.FC<VirtualTryOnProps> = ({ onBack }) => {
   const [userImage, setUserImage] = useState<File | null>(null);
+  const [userPreview, setUserPreview] = useState<string | null>(null);
   const [garmentImage, setGarmentImage] = useState<File | null>(null);
+  const [garmentPreview, setGarmentPreview] = useState<string | null>(null);
   const [resultImage, setResultImage] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  const userRef = useRef<HTMLInputElement>(null);
+  const garmentRef = useRef<HTMLInputElement>(null);
+
   const handleUserImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
-      setUserImage(e.target.files[0]);
+      const file = e.target.files[0];
+      setUserImage(file);
+      setUserPreview(URL.createObjectURL(file));
     }
   };
 
   const handleGarmentImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
-      setGarmentImage(e.target.files[0]);
+      const file = e.target.files[0];
+      setGarmentImage(file);
+      setGarmentPreview(URL.createObjectURL(file));
     }
   };
 
@@ -31,13 +41,15 @@ export const VirtualTryOn: React.FC<VirtualTryOnProps> = ({ onBack }) => {
 
     setLoading(true);
     setError(null);
+    const startTime = performance.now();
 
     try {
       const formData = new FormData();
       formData.append("user_image", userImage);
       formData.append("garment_image", garmentImage);
 
-      const response = await fetch("http://127.0.0.1:8000/vton", {
+      // Use VTON endpoint
+      const response = await fetch("http://localhost:8000/vton", {
         method: "POST",
         body: formData,
       });
@@ -49,6 +61,10 @@ export const VirtualTryOn: React.FC<VirtualTryOnProps> = ({ onBack }) => {
       const blob = await response.blob();
       const url = URL.createObjectURL(blob);
       setResultImage(url);
+      
+      const duration = ((performance.now() - startTime) / 1000).toFixed(2);
+      console.log(`VTON request completed in ${duration}s`);
+
     } catch (err) {
       setError(err instanceof Error ? err.message : "An error occurred.");
     } finally {
@@ -57,36 +73,78 @@ export const VirtualTryOn: React.FC<VirtualTryOnProps> = ({ onBack }) => {
   };
 
   return (
-    <div style={{ textAlign: 'center', padding: '20px' }}>
-      <h2>Virtual Try-On</h2>
-      <div style={{ display: 'flex', justifyContent: 'center', gap: '20px', marginBottom: '20px' }}>
-        <div>
-          <h3>User Image</h3>
-          <input type="file" accept="image/*" onChange={handleUserImageChange} />
-          {userImage && <p>{userImage.name}</p>}
+    <div className={styles.container}>
+      <h2 className={styles.heading}>Virtual Try-On</h2>
+      
+      <div className={styles.uploadGrid}>
+        <div className={styles.uploadCard}>
+          <h3 className={styles.cardTitle}>Your Photo</h3>
+          {userPreview ? (
+            <img src={userPreview} alt="User Preview" className={styles.previewImage} />
+          ) : (
+            <div className={styles.previewPlaceholder} />
+          )}
+          <input 
+            type="file" 
+            ref={userRef}
+            accept="image/*" 
+            className={styles.fileInput} 
+            onChange={handleUserImageChange} 
+          />
+          <button 
+            className={styles.fileLabel} 
+            onClick={() => userRef.current?.click()}
+          >
+            {userImage ? 'Change Image' : 'Choose Photo'}
+          </button>
+          {userImage && <span className={styles.fileName}>{userImage.name}</span>}
         </div>
-        <div>
-          <h3>Garment Image</h3>
-          <input type="file" accept="image/*" onChange={handleGarmentImageChange} />
-          {garmentImage && <p>{garmentImage.name}</p>}
+
+        <div className={styles.uploadCard}>
+          <h3 className={styles.cardTitle}>Garment Photo</h3>
+          {garmentPreview ? (
+            <img src={garmentPreview} alt="Garment Preview" className={styles.previewImage} />
+          ) : (
+            <div className={styles.previewPlaceholder} />
+          )}
+          <input 
+            type="file" 
+            ref={garmentRef}
+            accept="image/*" 
+            className={styles.fileInput} 
+            onChange={handleGarmentImageChange} 
+          />
+          <button 
+            className={styles.fileLabel} 
+            onClick={() => garmentRef.current?.click()}
+          >
+            {garmentImage ? 'Change Image' : 'Choose Garment'}
+          </button>
+          {garmentImage && <span className={styles.fileName}>{garmentImage.name}</span>}
         </div>
       </div>
 
-      <button onClick={handleTryOn} disabled={loading || !userImage || !garmentImage} style={{ padding: '10px 20px', fontSize: '16px', cursor: 'pointer' }}>
-        {loading ? "Processing..." : "Try On"}
+      <button 
+        className={styles.tryOnBtn} 
+        onClick={handleTryOn} 
+        disabled={loading || !userImage || !garmentImage}
+      >
+        {loading ? "Processing magic..." : "Generate Look"}
       </button>
 
-      {error && <p style={{ color: 'red' }}>{error}</p>}
+      {error && <div className={styles.error} role="alert">{error}</div>}
 
       {resultImage && (
-        <div style={{ marginTop: '20px' }}>
-          <h3>Result</h3>
-          <img src={resultImage} alt="Try-on Result" style={{ maxWidth: '100%', maxHeight: '500px' }} />
-        </div>
+        <section className={styles.resultSection}>
+          <h3 className={styles.resultTitle}>Your New Look</h3>
+          <img src={resultImage} alt="Try-on Result" className={styles.resultImage} />
+        </section>
       )}
 
-      <div style={{ marginTop: '20px' }}>
-        <button onClick={onBack}>Back</button>
+      <div className={styles.actions}>
+        <button type="button" className={styles.backBtn} onClick={onBack}>
+          Back to Results
+        </button>
       </div>
     </div>
   );

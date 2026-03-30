@@ -1,8 +1,9 @@
-.section {
-  max-width: 520px;
+.container {
+  max-width: 600px;
   margin: 0 auto;
   padding: 2rem 1rem;
   animation: fadeInUp 400ms ease-out both;
+  text-align: center;
 }
 
 .heading {
@@ -12,69 +13,67 @@
   margin: 0 0 0.5rem;
 }
 
-.subtext {
+.subheading {
   color: var(--text-muted);
   font-size: 0.95rem;
-  margin: 0 0 1rem;
+  margin: 0 0 2rem;
 }
 
-.suggested {
-  background: rgba(134, 239, 172, 0.1);
-  border: 1px solid rgba(134, 239, 172, 0.3);
-  color: var(--success);
-  padding: 0.65rem 1rem;
-  border-radius: var(--radius-sm);
-  font-size: 0.9rem;
-  margin: 0 0 1rem;
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+  margin-bottom: 2rem;
 }
 
-.options {
-  display: flex;
-  flex-direction: column;
-  gap: 0.75rem;
-}
-
-.option {
-  text-align: left;
+.card {
   background: var(--surface);
   border: 1px solid var(--border);
   border-radius: var(--radius);
-  padding: 1rem 1.25rem;
-  color: var(--text);
-  transition: border-color 200ms ease, background 200ms ease, transform 200ms ease, box-shadow 200ms ease;
+  padding: 1.5rem;
+  cursor: pointer;
+  transition: all 200ms ease;
+  text-align: left;
 }
 
-.option:hover {
+.card:hover {
   border-color: var(--accent);
   background: var(--surface-elevated);
   transform: translateY(-2px);
-  box-shadow: 0 10px 20px rgba(0,0,0,0.35);
+  box-shadow: 0 8px 16px rgba(0,0,0,0.35);
 }
 
-.optionLabel {
+.emoji {
+  font-size: 2rem;
+  margin-bottom: 0.75rem;
   display: block;
+}
+
+.cardTitle {
+  font-size: 1.1rem;
   font-weight: 600;
-  font-size: 1rem;
-  margin-bottom: 0.25rem;
+  margin: 0 0 0.5rem;
+  color: var(--text);
 }
 
-.optionHint {
-  display: block;
+.cardDescription {
+  font-size: 0.9rem;
   color: var(--text-muted);
-  font-size: 0.88rem;
+  margin: 0;
 }
 
 .actions {
-  margin-top: 1.5rem;
+  margin-top: 2rem;
 }
 
 .backBtn {
   background: transparent;
   color: var(--text-muted);
   border: 1px solid var(--border);
-  padding: 0.65rem 1rem;
+  padding: 0.65rem 1.25rem;
   border-radius: var(--radius-sm);
-  transition: color 200ms ease, border-color 200ms ease, transform 200ms ease;
+  font-weight: 500;
+  transition: all 200ms ease;
 }
 
 .backBtn:hover {

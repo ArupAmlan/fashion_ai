@@ -1,0 +1,93 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  padding: 2rem;
+  text-align: center;
+  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+}
+
+.icon {
+  font-size: 4rem;
+  margin-bottom: 1rem;
+}
+
+.title {
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: #1f2937;
+  margin: 0 0 0.5rem 0;
+}
+
+.description {
+  font-size: 1rem;
+  color: #6b7280;
+  max-width: 400px;
+  margin: 0 0 1.5rem 0;
+}
+
+.details {
+  margin: 1rem 0;
+  padding: 1rem;
+  background: rgba(0, 0, 0, 0.05);
+  border-radius: 8px;
+  max-width: 600px;
+  width: 100%;
+}
+
+.details summary {
+  cursor: pointer;
+  font-weight: 600;
+  color: #4b5563;
+}
+
+.errorText {
+  margin-top: 0.5rem;
+  padding: 0.75rem;
+  background: #1f2937;
+  color: #f87171;
+  border-radius: 4px;
+  font-size: 0.8rem;
+  overflow-x: auto;
+  text-align: left;
+}
+
+.actions {
+  display: flex;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.primaryButton {
+  padding: 0.75rem 1.5rem;
+  background: #6366f1;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.primaryButton:hover {
+  background: #4f46e5;
+}
+
+.secondaryButton {
+  padding: 0.75rem 1.5rem;
+  background: transparent;
+  color: #6366f1;
+  border: 2px solid #6366f1;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.secondaryButton:hover {
+  background: rgba(99, 102, 241, 0.1);
+}
