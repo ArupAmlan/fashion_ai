@@ -2,6 +2,10 @@
 
 **Your personal stylist powered by AI** — Get personalized outfit recommendations based on your body shape, skin undertone, and style preferences. Now with **e-commerce integration** for instant shopping!
 
+## 🌐 Live Demo
+
+👉 **Try it now:** [https://fashion-ai-bay.vercel.app/](https://fashion-ai-bay.vercel.app/)
+
 ## ✨ Latest Features
 
 - 🛍️ **E-commerce Integration**: Direct shopping links to Amazon, Flipkart & Myntra
