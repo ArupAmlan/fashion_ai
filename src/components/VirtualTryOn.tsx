@@ -67,12 +67,7 @@ export const VirtualTryOn: React.FC<VirtualTryOnProps> = ({ onBack }) => {
       console.log(`VTON request completed in ${duration}s`);
 
     } catch (err) {
-      const message = err instanceof Error ? err.message : "An error occurred.";
-      if (message.includes("Failed to fetch") || message.includes("NetworkError")) {
-        setError("Virtual Try-On requires a live backend. Please ensure the Python server is running and VITE_API_URL is configured.");
-      } else {
-        setError(message);
-      }
+      setError(err instanceof Error ? err.message : "An error occurred.");
     } finally {
       setLoading(false);
     }
