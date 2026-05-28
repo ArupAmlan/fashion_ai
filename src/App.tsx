@@ -34,7 +34,6 @@ export default function App() {
   const [error, setError] = useState<string | null>(null)
   const [useMeasurementsInImageMode, setUseMeasurementsInImageMode] = useState(false)
   const [occasion, setOccasion] = useState<Occasion>('casual')
-  const [showBackground, setShowBackground] = useState(true)
   const [backendStatus, setBackendStatus] = useState<'checking' | 'online' | 'offline'>('checking')
 
   useEffect(() => {
