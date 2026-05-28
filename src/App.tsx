@@ -276,7 +276,7 @@ export default function App() {
           <span style={{ width: '8px', height: '8px', borderRadius: '50%', backgroundColor: backendStatus === 'online' ? '#4ade80' : backendStatus === 'offline' ? '#f87171' : '#fbbf24' }}></span>
           {backendStatus === 'online' ? 'Backend Connected' : backendStatus === 'offline' ? 'Backend Offline' : 'Checking Backend...'}
         </div>
-        <h1 className="logo">StyleMatch</h1>
+        <h1 className="logo">HARP FASHION</h1>
         <p className="tagline">Personal fashion advice from your shape & colour</p>
       </header>
 
@@ -353,7 +353,6 @@ export default function App() {
         {!loading && step === 'vton' && (
           <VirtualTryOn onBack={() => setStep('results')} />
         )}
-
       </main>
 
       <footer className="footer">

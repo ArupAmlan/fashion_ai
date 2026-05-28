@@ -40,7 +40,7 @@ async def lifespan(app: FastAPI):
 
 
 app = FastAPI(
-    title="StyleMatch Fashion API",
+    title="HARP FASHION API",
     description="Enhanced backend with VTON, AI image generation, pose detection, caching, and e-commerce integration.",
     version="2.0.0",
     lifespan=lifespan,
